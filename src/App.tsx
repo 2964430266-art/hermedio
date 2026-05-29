@@ -1388,6 +1388,30 @@ export default function App() {
     }
   };
 
+  // Background audio keep-alive: browser throttles <audio> when tab is hidden
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        if (playback.isPlaying && audioRef.current?.paused) {
+          audioRef.current.play().catch(() => {});
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [playback.isPlaying]);
+
+  // Periodic watchdog: re-check every 5s if audio was throttled by browser
+  useEffect(() => {
+    if (!playback.isPlaying) return;
+    const interval = setInterval(() => {
+      if (audioRef.current?.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [playback.isPlaying]);
+
   // Swipe gesture handlers for Panel B cover carousel (slide-to-switch)
   const handleSwipeStart = (startX: number, startY: number) => {
     setSwipeState({ startX, startY, isDragging: true });
