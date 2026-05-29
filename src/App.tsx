@@ -507,18 +507,16 @@ export default function App() {
   // Recenter UI on window resize / fullscreen (F11)
   useEffect(() => {
     const doRecenter = () => {
-      requestAnimationFrame(() => {
-        const w = window.innerWidth;
-        if (w > 1080) {
-          setPositions(prev => ({
-            ...prev,
-            player: { ...prev.player, x: w / 2 - 435 },
-            synth: { ...prev.synth, x: w / 2 + 400 },
-            expanded: { ...prev.expanded, x: w / 2 + 115 },
-            info: { ...prev.info, x: w / 2 - 250 },
-          }));
-        }
-      });
+      localStorage.removeItem("hermedio_widget_positions");
+      const w = window.innerWidth;
+      if (w > 1080) {
+        setPositions({
+          player: { x: w / 2 - 435, y: 158 },
+          synth: { x: w / 2 + 400, y: 390 },
+          expanded: { x: w / 2 + 115, y: 80 },
+          info: { x: w / 2 - 250, y: 150 },
+        });
+      }
     };
     window.addEventListener("resize", doRecenter);
     document.addEventListener("fullscreenchange", doRecenter);
