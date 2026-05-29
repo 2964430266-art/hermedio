@@ -771,6 +771,7 @@ export default function App() {
 
   // 7. Refs
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const crossfadeRef = useRef<HTMLAudioElement | null>(null);
   const mvContainerRef = useRef<HTMLDivElement | null>(null);
   const dropZoneRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -797,6 +798,8 @@ export default function App() {
   const pendingPlayRef = useRef(false);
   const fadeAnimRef = useRef<number>(0);
   const isFadingRef = useRef(false);
+  const crossfadeActiveRef = useRef(false);
+  const crossfadeHandledRef = useRef(false);
 
   const fadeVolume = (from: number, to: number, durationMs: number) => {
     if (!audioRef.current) return;
@@ -1356,14 +1359,78 @@ export default function App() {
     setPlayback(prev => ({ ...prev, isPlaying: true }));
   };
 
-  // Fade-out 4s before song ends (DJ-style transition)
+  // Auto-crossfade: fade out current song at 4s, load & fade in next song in parallel
   useEffect(() => {
-    if (currentSong.isYouTube || !playback.isPlaying) return;
+    if (currentSong.isYouTube || !playback.isPlaying || crossfadeActiveRef.current) return;
+    if (playback.repeatMode === "one") return;
     const dur = playback.duration || currentSong.duration;
-    if (!dur || dur <= 0) return;
+    if (!dur || dur <= 0 || songs.length <= 1) return;
     const remaining = dur - playback.currentTime;
-    if (remaining <= 4 && remaining > 0.5 && !isFadingRef.current) {
-      fadeVolume(playback.volume, 0, remaining * 1000);
+    if (remaining <= 4 && remaining > 2) {
+      // Compute next song
+      const curIdx = songs.findIndex(s => s.id === currentSong.id);
+      if (curIdx < 0) return;
+      const nextIdx = (curIdx + 1) % songs.length;
+      const nextSong = songs[nextIdx];
+      if (!nextSong || !crossfadeRef.current) return;
+
+      crossfadeActiveRef.current = true;
+      const a = audioRef.current;
+      const targetVol = playback.isMuted ? 0 : playback.volume;
+
+      // 1. Fade out audioRef over remaining time
+      const fadeStart = performance.now();
+      const totalFadeMs = remaining * 1000;
+      const doFadeOut = () => {
+        const t = Math.min((performance.now() - fadeStart) / totalFadeMs, 1);
+        if (a) a.volume = Math.max(0, targetVol * (1 - t));
+        if (t < 1) requestAnimationFrame(doFadeOut);
+      };
+      requestAnimationFrame(doFadeOut);
+
+      // 2. Load next song into crossfadeRef in parallel
+      (async () => {
+        let playUrl = nextSong.url;
+        if (!playUrl && nextSong.neteaseId) {
+          try {
+            const res = await fetch(`/api/netease-url/${nextSong.neteaseId}`);
+            const data = await res.json();
+            if (data.url) playUrl = data.url;
+          } catch { crossfadeActiveRef.current = false; return; }
+        }
+        if (!playUrl || !crossfadeRef.current) { crossfadeActiveRef.current = false; return; }
+
+        const cf = crossfadeRef.current;
+        cf.src = playUrl;
+        cf.volume = 0;
+        cf.load();
+
+        cf.oncanplaythrough = () => {
+          cf.play().catch(() => {});
+          // 3. Fade in crossfadeRef over 1.5s
+          const fiStart = performance.now();
+          const doFadeIn = () => {
+            const t = Math.min((performance.now() - fiStart) / 1500, 1);
+            cf.volume = Math.max(0, Math.min(1, targetVol * t));
+            if (t < 1) requestAnimationFrame(doFadeIn);
+            else {
+              // 4. Hand off: sync audioRef to new song
+              const cfPos = cf.currentTime;
+              if (a) {
+                a.src = playUrl!;
+                a.currentTime = cfPos;
+                if (playback.isPlaying) a.play().catch(() => {});
+              }
+              cf.pause();
+              cf.src = "";
+              setCurrentSong({ ...nextSong, url: playUrl! });
+              crossfadeHandledRef.current = true;
+              crossfadeActiveRef.current = false;
+            }
+          };
+          requestAnimationFrame(doFadeIn);
+        };
+      })();
     }
   }, [playback.currentTime]);
 
@@ -1375,6 +1442,11 @@ export default function App() {
   }, [currentSong.id]);
 
   const handleSongEnded = () => {
+    // Crossfade already handled the transition
+    if (crossfadeActiveRef.current || crossfadeHandledRef.current) {
+      crossfadeHandledRef.current = false;
+      return;
+    }
     isFadingRef.current = false;
     cancelAnimationFrame(fadeAnimRef.current);
     if (playback.repeatMode === "one") {
@@ -1672,6 +1744,9 @@ export default function App() {
         onEnded={handleSongEnded}
         id="native-lofi-media"
       />
+
+      {/* Hidden audio for auto-crossfade overlap */}
+      <audio ref={crossfadeRef} style={{ display: "none" }} />
 
       {/* Decorative desktop background (clean and pristine) */}
 
