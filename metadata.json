@@ -1,0 +1,6 @@
+{
+  "name": "hermedio",
+  "description": "An elegant lo-fi and J-pop virtual desktop music player. Features high-efficiency local audio file parsing, SVG waveform visualizers, dynamic widgets (retro clock, vinyl view), and AI-powered background/lyrics analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

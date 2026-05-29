@@ -1,0 +1,21 @@
+{
+  "name": "hermedio",
+  "short_name": "hermedio",
+  "description": "An elegant lo-fi and J-pop virtual desktop music player.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#020503",
+  "theme_color": "#cb4b51",
+  "icons": [
+    {
+      "src": "https://pwa-lib.js.org/assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://pwa-lib.js.org/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

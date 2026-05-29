@@ -1,0 +1,30 @@
+{
+  "favoriteArtists": {
+    "western": ["Michael Jackson", "Bruno Mars", "The Weeknd", "Maroon 5", "Justin Bieber", "Eminem", "Britney Spears", "Lady Gaga", "Rihanna", "Taylor Swift", "JVKE", "Charlie Puth", "BoyWithUke"],
+    "kpop": ["BIGBANG", "G-DRAGON", "EXO", "Girls' Generation", "FIFTY FIFTY", "T-ara", "Trouble Maker", "EXID", "AOA", "2NE1"],
+    "jpop": ["YOASOBI", "RADWIMPS", "ヨルシカ", "結束バンド", "宇多田ヒカル", "milet", "Aimer", "Vaundy", "imase", "美波", "こっちのけんと"],
+    "chinese": ["林俊杰", "陈奕迅", "蔡依林", "陶喆", "王力宏", "孙燕姿", "蔡健雅", "张杰", "方大同"],
+    "indie": ["Laufey", "Joji", "Glass Animals", "Oh Wonder", "The Marías", "Cafuné", "Claire Rosinkranz"],
+    "electronic": ["Marshmello", "Knock2", "ISOxo"]
+  },
+  "genres": ["Pop", "K-Pop", "J-Pop", "Mandopop", "Cantopop", "R&B", "Soul", "Hip-Hop", "Rap", "Electronic", "EDM", "Indie", "Alternative", "Game OST", "Classical Crossover"],
+  "languages": ["Chinese", "English", "Japanese", "Korean"],
+  "vibes": {
+    "night": ["The Weeknd", "Joji", "RADWIMPS"],
+    "energy": ["BIGBANG", "Michael Jackson", "Bruno Mars"],
+    "chill": ["Laufey", "Oh Wonder", "The Marías"],
+    "nostalgic": ["BIGBANG", "Girls' Generation", "classic 2000s pop"],
+    "focus": ["Ludovico Einaudi", "game OSTs", "lo-fi", "坂本龍一"],
+    "driving": ["EDM", "bass boosted", "up-tempo pop"]
+  },
+  "playlists": {
+    "morning-energy": { "name": "Morning Energy", "tags": ["jpop", "mandopop", "acoustic", "morning"], "artists": ["林俊杰", "RADWIMPS", "Aimer", "YOASOBI"] },
+    "kpop-bangers": { "name": "K-Pop Bangers", "tags": ["kpop", "energetic", "dance"], "artists": ["BIGBANG", "G-DRAGON", "EXO", "少女时代"] },
+    "deep-focus": { "name": "Deep Focus", "tags": ["instrumental", "ost", "lofi", "classical"], "artists": ["Ludovico Einaudi", "坂本龍一"] },
+    "evening-chill": { "name": "Evening Chill", "tags": ["rnb", "indie", "chill", "jpop"], "artists": ["Laufey", "The Marías", "Joji", "Oh Wonder", "ヨルシカ"] },
+    "late-night-vibes": { "name": "Late Night Vibes", "tags": ["nocturnal", "slow", "rnb", "dark"], "artists": ["The Weeknd", "Joji", "蔡健雅"] },
+    "weekend-vibes": { "name": "Weekend Vibes", "tags": ["pop", "edm", "feel-good", "dance"], "artists": ["Bruno Mars", "Michael Jackson", "JVKE"] },
+    "mandopop-gold": { "name": "Mandopop Gold", "tags": ["mandopop", "cantopop", "classics"], "artists": ["陈奕迅", "孙燕姿", "蔡依林", "陶喆", "王力宏", "方大同", "张杰"] },
+    "jpop-collection": { "name": "J-Pop Collection", "tags": ["jpop", "jrock", "anime"], "artists": ["YOASOBI", "RADWIMPS", "ヨルシカ", "結束バンド", "Vaundy", "宇多田ヒカル", "milet", "Aimer"] }
+  }
+}
