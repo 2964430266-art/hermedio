@@ -509,12 +509,13 @@ export default function App() {
     const doRecenter = () => {
       localStorage.removeItem("hermedio_widget_positions");
       const w = window.innerWidth;
+      const h = window.innerHeight;
       if (w > 1080) {
         setPositions({
-          player: { x: w / 2 - 435, y: 158 },
-          synth: { x: w / 2 + 400, y: 390 },
-          expanded: { x: w / 2 + 115, y: 80 },
-          info: { x: w / 2 - 250, y: 150 },
+          player: { x: w / 2 - 435, y: h * 0.2 },
+          synth: { x: w / 2 + 400, y: h * 0.49 },
+          expanded: { x: w / 2 + 115, y: h * 0.1 },
+          info: { x: w / 2 - 250, y: h * 0.19 },
         });
       }
     };
@@ -553,11 +554,12 @@ export default function App() {
         return JSON.parse(saved);
       } catch (e) {}
     }
+    const h = window.innerHeight;
     return {
-      player: { x: window.innerWidth > 1080 ? (window.innerWidth / 2 - 435) : 20, y: 158 },
-      synth: { x: window.innerWidth > 1080 ? (window.innerWidth / 2 + 400) : 20, y: 390 },
-      expanded: { x: window.innerWidth > 1080 ? (window.innerWidth / 2 + 115) : 20, y: 80 },
-      info: { x: window.innerWidth / 2 - 250, y: 150 }
+      player: { x: window.innerWidth > 1080 ? (window.innerWidth / 2 - 435) : 20, y: h * 0.2 },
+      synth: { x: window.innerWidth > 1080 ? (window.innerWidth / 2 + 400) : 20, y: h * 0.49 },
+      expanded: { x: window.innerWidth > 1080 ? (window.innerWidth / 2 + 115) : 20, y: h * 0.1 },
+      info: { x: window.innerWidth / 2 - 250, y: h * 0.19 }
     };
   });
   const [zIndices, setZIndices] = useState(INITIAL_Z_INDEX);
