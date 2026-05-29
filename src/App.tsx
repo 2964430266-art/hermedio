@@ -1378,15 +1378,19 @@ export default function App() {
       const a = audioRef.current;
       const targetVol = playback.isMuted ? 0 : playback.volume;
 
-      // 1. Fade out audioRef over remaining time
-      const fadeStart = performance.now();
-      const totalFadeMs = remaining * 1000;
-      const doFadeOut = () => {
-        const t = Math.min((performance.now() - fadeStart) / totalFadeMs, 1);
-        if (a) a.volume = Math.max(0, targetVol * (1 - t));
-        if (t < 1) requestAnimationFrame(doFadeOut);
-      };
-      requestAnimationFrame(doFadeOut);
+      // 1. Fade out audioRef over remaining time (or skip if tab hidden)
+      if (document.visibilityState === "hidden") {
+        if (a) a.volume = 0; // immediate mute in background
+      } else {
+        const fadeStart = performance.now();
+        const totalFadeMs = remaining * 1000;
+        const doFadeOut = () => {
+          const t = Math.min((performance.now() - fadeStart) / totalFadeMs, 1);
+          if (a) a.volume = Math.max(0, targetVol * (1 - t));
+          if (t < 1) requestAnimationFrame(doFadeOut);
+        };
+        requestAnimationFrame(doFadeOut);
+      }
 
       // 2. Load next song into crossfadeRef in parallel
       (async () => {
@@ -1407,7 +1411,20 @@ export default function App() {
 
         cf.oncanplaythrough = () => {
           cf.play().catch(() => {});
-          // 3. Fade in crossfadeRef over 1.5s
+          // 3. Fade in crossfadeRef over 1.5s (or skip if tab hidden)
+          if (document.visibilityState === "hidden") {
+            // Tab hidden: hand off immediately, no animation
+            if (a) {
+              a.src = playUrl!;
+              a.volume = targetVol;
+              a.play().catch(() => {});
+            }
+            cf.pause(); cf.src = "";
+            setCurrentSong({ ...nextSong, url: playUrl! });
+            crossfadeHandledRef.current = true;
+            crossfadeActiveRef.current = false;
+            return;
+          }
           const fiStart = performance.now();
           const doFadeIn = () => {
             const t = Math.min((performance.now() - fiStart) / 1500, 1);
