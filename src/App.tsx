@@ -1401,11 +1401,11 @@ export default function App() {
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [playback.isPlaying]);
 
-  // Periodic watchdog: re-check every 5s if audio was throttled by browser
+  // Periodic watchdog: re-check every 5s if audio was throttled by browser (only when tab hidden)
   useEffect(() => {
     if (!playback.isPlaying) return;
     const interval = setInterval(() => {
-      if (audioRef.current?.paused) {
+      if (document.visibilityState === "hidden" && audioRef.current?.paused) {
         audioRef.current.play().catch(() => {});
       }
     }, 5000);
