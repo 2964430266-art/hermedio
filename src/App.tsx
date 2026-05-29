@@ -504,22 +504,28 @@ export default function App() {
     return localStorage.getItem("hermedio_is_deepseek_open") === "true";
   });
 
-  // Recenter UI on window resize (fullscreen)
+  // Recenter UI on window resize / fullscreen (F11)
   useEffect(() => {
-    const handleResize = () => {
-      const w = window.innerWidth;
-      if (w > 1080) {
-        setPositions(prev => ({
-          ...prev,
-          player: { ...prev.player, x: w / 2 - 435 },
-          synth: { ...prev.synth, x: w / 2 + 400 },
-          expanded: { ...prev.expanded, x: w / 2 + 115 },
-          info: { ...prev.info, x: w / 2 - 250 },
-        }));
-      }
+    const doRecenter = () => {
+      requestAnimationFrame(() => {
+        const w = window.innerWidth;
+        if (w > 1080) {
+          setPositions(prev => ({
+            ...prev,
+            player: { ...prev.player, x: w / 2 - 435 },
+            synth: { ...prev.synth, x: w / 2 + 400 },
+            expanded: { ...prev.expanded, x: w / 2 + 115 },
+            info: { ...prev.info, x: w / 2 - 250 },
+          }));
+        }
+      });
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", doRecenter);
+    document.addEventListener("fullscreenchange", doRecenter);
+    return () => {
+      window.removeEventListener("resize", doRecenter);
+      document.removeEventListener("fullscreenchange", doRecenter);
+    };
   }, []);
 
   // 1b. Search & Platform Source States
